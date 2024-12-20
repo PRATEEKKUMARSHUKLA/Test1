@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requests</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <style>
+        /* Simple CSS for layout */
+        .request-stripes {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .stripe {
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            min-width: 250px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .stripe:hover {
+            transform: scale(1.05);
+            background-color: #d3d3d3;
+        }
+
+        .stripe h3 {
+            margin: 0;
+        }
+
+        .stripe p {
+            font-size: 12px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Requests</h1>
+<div class="request-stripes" id="requestStripes">
+    <!-- Request stripes will appear here -->
+</div>
+
+<script>
+    // Your Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyB3Bm3ybcQ0slC7Ku1gzv6CEb7elfNhPOo",
+  authDomain: "test-da729.firebaseapp.com",
+  projectId: "test-da729",
+  storageBucket: "test-da729.firebasestorage.app",
+  messagingSenderId: "524913894201",
+  appId: "1:524913894201:web:5c3f78504cd525781dfee8"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database(app);
+
+    // Fetch and display requests
+    function fetchRequests() {
+        const requestsRef = db.ref('requests');
+        requestsRef.once('value', (snapshot) => {
+            const requests = snapshot.val();
+            if (requests) {
+                const requestStripes = document.getElementById('requestStripes');
+                requestStripes.innerHTML = ''; // Clear the existing list
+                Object.keys(requests).forEach(requestId => {
+                    const request = requests[requestId];
+                    const stripe = document.createElement('div');
+                    stripe.classList.add('stripe');
+                    stripe.onclick = () => {
+                        window.location.href = `request_details.html?id=${requestId}`;
+                    };
+                    stripe.innerHTML = `
+                        <h3>${request.name}</h3>
+                        <p>Submit Date: ${request.submit_date} - ${request.submit_time}</p>
+                    `;
+                    requestStripes.appendChild(stripe);
+                });
+            }
+        });
+    }
+
+    // Call the function to fetch requests on page load
+    window.onload = fetchRequests;
+</script>
+
+</body>
+</html>

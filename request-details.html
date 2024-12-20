@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Details</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+</head>
+<body>
+
+<h1>Request Details</h1>
+<div id="requestDetails">
+    <!-- Request details will appear here -->
+</div>
+
+<script>
+    // Your Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyB3Bm3ybcQ0slC7Ku1gzv6CEb7elfNhPOo",
+  authDomain: "test-da729.firebaseapp.com",
+  projectId: "test-da729",
+  storageBucket: "test-da729.firebasestorage.app",
+  messagingSenderId: "524913894201",
+  appId: "1:524913894201:web:5c3f78504cd525781dfee8"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database(app);
+
+    // Fetch the request details
+    function fetchRequestDetails(requestId) {
+        const requestRef = db.ref('requests/' + requestId);
+        requestRef.once('value', (snapshot) => {
+            const request = snapshot.val();
+            if (request) {
+                const requestDetails = document.getElementById('requestDetails');
+                requestDetails.innerHTML = `
+                    <h3>Request ID: ${request.id}</h3>
+                    <p><strong>Name:</strong> ${request.name}</p>
+                    <p><strong>Email:</strong> ${request.email}</p>
+                    <p><strong>Song 1:</strong> ${request.song_1} | <strong>Artist 1:</strong> ${request.artist_1}</p>
+                    <p><strong>Song 2:</strong> ${request.song_2} | <strong>Artist 2:</strong> ${request.artist_2}</p>
+                    <p><strong>Song 3:</strong> ${request.song_3} | <strong>Artist 3:</strong> ${request.artist_3}</p>
+                    <p><strong>Submit Date:</strong> ${request.submit_date}</p>
+                    <p><strong>Submit Time:</strong> ${request.submit_time}</p>
+                `;
+            } else {
+                document.getElementById('requestDetails').innerHTML = "<p>No request found.</p>";
+            }
+        });
+    }
+
+    // Get the request ID from the URL
+    const params = new URLSearchParams(window.location.search);
+    const requestId = params.get('id');
+    if (requestId) {
+        fetchRequestDetails(requestId);
+    } else {
+        document.getElementById('requestDetails').innerHTML = "<p>No request ID specified.</p>";
+    }
+</script>
+
+</body>
+</html>
